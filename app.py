@@ -12,9 +12,13 @@ st.set_page_config(
 # Örn: https://raw.githubusercontent.com/zenta2898/enerji-asistani/main/logo.png
 st.markdown(
     """
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/zenta2898/enerji-asistani/main/logo.png">
+    <head>
+        <link rel="apple-touch-icon" sizes="180x180" href="https://raw.githubusercontent.com/zenta2898/enerji-asistani/main/logo.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="https://raw.githubusercontent.com/zenta2898/enerji-asistani/main/logo.png">
+    </head>
     """,
     unsafe_allow_html=True
+)
 )
 
 # --- TASARIM VE STİL ---
