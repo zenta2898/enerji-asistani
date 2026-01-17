@@ -1,9 +1,7 @@
-# Colab üzerinde Streamlit çalıştırmak için gerekli kurulum (Sadece bir kez)
-!pip install -q streamlit
+import streamlit as st
 
-# Uygulama dosyasını oluşturuyoruz
-with open('app.py', 'w') as f:
-    f.write('''
+st.set_page_config(page_title="Enerji Master Pro", page_icon="🌱")
+# ... kodun geri kalanı buraya gelecek ...
 import streamlit as st
 
 st.set_page_config(page_title="Enerji Master Pro", page_icon="🌱")
@@ -63,5 +61,4 @@ with tab3:
     st.write("❌ Klima gereksiz çalıştırıldı (-45 TL kayıp)")
     ''')
 
-# Uygulamayı geçici olarak internete açmak için (Colab için özel)
-!npx localtunnel --port 8501
+
