@@ -1,61 +1,101 @@
 import streamlit as st
+import time
 
-# Uygulama Başlığı ve Ayarları
-st.set_page_config(page_title="Enerji Master Pro", page_icon="🌱")
+# 1. Sayfa Konfigürasyonu ve Apple İkon Desteği
+st.set_page_config(
+    page_title="Enerji Master", 
+    page_icon="🔋", 
+    layout="centered"
+)
 
-st.title("🌱 Enerji Master: Tasarruf Asistanı")
-st.markdown("---")
+# iPhone Ana Ekran İkonu İçin HTML (GitHub kullanıcı adını ve repo adını buraya yazmalısın)
+# Örn: https://raw.githubusercontent.com/zenta2898/enerji-asistani/main/logo.png
+st.markdown(
+    """
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/zenta2898/enerji-asistani/main/logo.png">
+    """,
+    unsafe_allow_html=True
+)
 
-# Sekmeler (Tablar)
-tab1, tab2, tab3 = st.tabs(["⚡ Elektrik", "🔥 Doğalgaz", "📊 Genel Rapor"])
+# --- TASARIM VE STİL ---
+st.markdown("""
+    <style>
+    .stProgress > div > div > div > div {
+        background-color: #4CAF50;
+    }
+    .main {
+        background-color: #f5f7f9;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-with tab1:
-    st.header("Elektrikli Cihaz Analizi")
-    
-    col1, col2 = st.columns(2)
-    with col1:
-        cihaz = st.selectbox("Cihaz Seçin", ["Buzdolabı", "Çamaşır Makinesi", "Bulaşık Makinesi", "Klima", "Ütü", "Televizyon"])
-        watt = st.number_input("Cihazın Gücü (Watt)", value=150, step=10)
-    
+# --- OTURUM YÖNETİMİ ---
+if 'giris' not in st.session_state:
+    st.session_state.giris = False
+
+# --- GİRİŞ SAYFASI ---
+if not st.session_state.giris:
+    col1, col2, col3 = st.columns([1,2,1])
     with col2:
-        saat = st.slider("Günlük Kullanım (Saat)", 0.0, 24.0, 5.0)
-        birim_fiyat = 3.50 # TL/kWh
+        # LOGO BURADA GÖRÜNECEK
+        try:
+            st.image("logo.png", width=200)
+        except:
+            st.write("🔋") # Logo yüklenene kadar yedek ikon
+            
+        st.markdown("<h1 style='text-align: center; color: #2E7D32;'>Enerji Master</h1>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center; font-weight: bold;'>Watt'ını Bil, Cebini Koru.</p>", unsafe_allow_html=True)
+        
+        st.divider()
+        
+        # Pil ve Verimlilik Vurgusu
+        st.warning("⚠️ Mevcut Verimlilik Puanın: %35")
+        st.progress(35)
+        st.caption("Telefonunun şarjı gibi düşün; evin enerjisi de sızıyor olabilir!")
+        
+        if st.button("🚀 Analizi Başlat ve Tasarruf Et", use_container_width=True):
+            with st.spinner('Ev verileri optimize ediliyor...'):
+                time.sleep(1.5)
+                st.session_state.giris = True
+                st.rerun()
 
-    aylik_tuketim = (watt / 1000) * saat * 30
-    aylik_maliyet = aylik_tuketim * birim_fiyat
+# --- ANA UYGULAMA SAYFASI ---
+else:
+    # Sidebar Logo ve Menü
+    try:
+        st.sidebar.image("logo.png", width=100)
+    except:
+        pass
+        
+    st.sidebar.title("🌱 Enerji Master Menü")
+    sayfa = st.sidebar.radio("Sayfa Seçin:", ["📊 Hesaplama Paneli", "📚 Tasarruf Sırları", "🛠️ Ayarlar"])
 
-    # Verimlilik Sınıfı Mantığı
-    if watt < 100: sinif, renk = "A+++ ✅", "green"
-    elif watt < 300: sinif, renk = "B ⚠️", "orange"
-    else: sinif, renk = "G (Verimsiz) ❌", "red"
+    if sayfa == "📊 Hesaplama Paneli":
+        st.title("⚡ Akıllı Enerji Paneli")
+        
+        tab1, tab2 = st.tabs(["🔌 Elektrikli Cihazlar", "🔥 Doğalgaz"])
+        
+        with tab1:
+            cihaz = st.selectbox("Cihaz:", ["Buzdolabı", "Klima", "Ütü", "Çamaşır Makinesi", "TV"])
+            watt = st.number_input("Watt Değeri:", value=150)
+            saat = st.slider("Günlük Kullanım (Saat):", 0.0, 24.0, 5.0)
+            
+            maliyet = (watt/1000) * saat * 30 * 3.50
+            st.metric("Aylık Tahmini Fatura Etkisi", f"{maliyet:.2f} TL")
+            
+            # Seçilen cihaza özel sırları burada gösterelim
+            if cihaz == "Buzdolabı":
+                st.info("✨ Sır: Buzdolabını duvardan uzaklaştırmak verimlilik pilini %15 artırır!")
 
-    st.metric("Tahmini Aylık Maliyet", f"{aylik_maliyet:.2f} TL")
-    st.write(f"Enerji Verimlilik Tahmini: **{sinif}**")
+        with tab2:
+            derece = st.slider("Kombi Isısı:", 35, 75, 45)
+            st.metric("Tahmini Gaz Faturası", f"{(derece * 25):.2f} TL")
 
-    # Cihaza Özel Zeki İpuçları
-    with st.expander("✨ Bu Cihaz İçin Tasarruf Sırları"):
-        if cihaz == "Buzdolabı":
-            st.write("- Duvarla arasına en az 10 cm mesafe bırakın (Enerji %15 azalır).")
-            st.write("- Arkasındaki tozları 6 ayda bir süpürgeyle alın.")
-        elif cihaz == "Ütü":
-            st.write("- Ütüleme bitmeden 5 dk önce fişi çekin, mevcut ısı yeterli olur.")
-        else:
-            st.write("- Cihazı kullanmadığınızda fişten çekmek gizli tüketimi önler.")
+    elif sayfa == "📚 Tasarruf Sırları":
+        st.header("📖 Tasarruf Kütüphanesi")
+        st.write("Burada cihazların detaylı tasarruf sırlarını listeleyeceğiz.")
 
-with tab2:
-    st.header("Doğalgaz Tasarrufu")
-    derece = st.slider("Kombi Isısı (°C)", 35, 75, 45)
-    yalitim = st.checkbox("Evde Isı Yalıtımı Var mı?")
-    
-    carpan = 0.7 if yalitim else 1.3
-    tahmini_m3 = (derece / 40) * carpan * 10 * 30
-    gaz_faturasi = tahmini_m3 * 9.0 
-    
-    st.metric("Tahmini Gaz Faturası", f"{gaz_faturasi:.2f} TL")
-    st.info("💡 İpucu: Geceleri dereceyi 2-3 birim düşürmek faturayı %10 etkiler.")
-
-with tab3:
-    st.subheader("Tasarruf Durumu")
-    st.progress(70, text="Hedeflenen tasarrufun %70'ine ulaşıldı.")
-    st.success("Tebrikler! Geçen aya göre %15 daha verimlisiniz.")
+    if st.sidebar.button("Güvenli Çıkış"):
+        st.session_state.giris = False
+        st.rerun()
 
