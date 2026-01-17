@@ -36,10 +36,16 @@ if 'giris' not in st.session_state:
 # --- GİRİŞ SAYFASI ---
 if not st.session_state.giris:
     col1, col2, col3 = st.columns([1,2,1])
-    with col2:
-        # LOGO BURADA GÖRÜNECEK
-        try:
-            st.image("logo.png", width=200)
+   # Eski col2 içindeki st.image yerine bunu yapıştır:
+with col2:
+    st.markdown(
+        """
+        <div style="display: flex; justify-content: center;">
+            <img src="https://raw.githubusercontent.com/zenta2898/enerji-asistani/main/logo.png" width="200">
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
         except:
             st.write("🔋") # Logo yüklenene kadar yedek ikon
             
