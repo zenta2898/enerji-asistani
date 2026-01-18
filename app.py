@@ -1,59 +1,90 @@
 import streamlit as st
 import time
+import base64
 
-# 1. Sayfa Ayarları
+# 1. Sayfa Ayarları ve iPhone İkonu
 st.set_page_config(page_title="Enerji Master", page_icon="🔋", layout="centered")
 
-# 2. iPhone Ana Ekran İkonu ve Logo Ortalama Ayarları (HTML)
 st.markdown(
     """
     <head>
         <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/zenta2898/enerji-asistani/main/logo.png">
     </head>
-    <style>
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .logo-container img {
-            width: 200px;
-            border-radius: 20px;
-        }
-    </style>
     """,
     unsafe_allow_html=True
 )
+
+# --- VİDEO ARKAPLAN FONKSİYONU ---
+def get_base64_bin(bin_file):
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
+def set_bg_video(video_file):
+    try:
+        bin_str = get_base64_bin(video_file)
+        st.markdown(
+            f"""
+            <style>
+            #root > div:nth-child(1) > div > div > div {{
+                background: none;
+            }}
+            .stApp {{
+                background: transparent;
+            }}
+            video {{
+                position: fixed;
+                right: 0;
+                bottom: 0;
+                min-width: 100%;
+                min-height: 100%;
+                z-index: -1;
+                object-fit: cover;
+                filter: brightness(0.6);
+            }}
+            .video-content {{
+                position: relative;
+                z-index: 1;
+                text-align: center;
+                margin-top: 15vh;
+            }}
+            </style>
+            <video autoplay loop muted playsinline>
+                <source src="data:video/mp4;base64,{bin_str}" type="video/mp4">
+            </video>
+            """,
+            unsafe_allow_html=True
+        )
+    except:
+        st.info("💡 Giriş animasyonu yükleniyor... (intro.mp4 dosyasını GitHub'a yüklediğinizden emin olun)")
 
 # --- OTURUM YÖNETİMİ ---
 if 'giris' not in st.session_state:
     st.session_state.giris = False
 
-# --- GİRİŞ SAYFASI ---
+# --- GİRİŞ EKRANI (VİDEOLU) ---
 if not st.session_state.giris:
-    # Logo Ortalama
-    st.markdown(
-        '<div class="logo-container"><img src="https://raw.githubusercontent.com/zenta2898/enerji-asistani/main/logo.png"></div>',
-        unsafe_allow_html=True
-    )
+    set_bg_video("intro.mp4")
     
-    st.markdown("<h1 style='text-align: center; color: #2E7D32;'>Enerji Master</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-align: center; font-weight: bold;'>Watt'ını Bil, Cebini Koru.</p>", unsafe_allow_html=True)
+    st.markdown('<div class="video-content">', unsafe_allow_html=True)
+    st.markdown("<h1 style='color: white; text-shadow: 2px 2px 8px #000;'>Enerji Master</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='color: white; font-size: 20px; text-shadow: 2px 2px 8px #000;'>Watt'ını Bil, Cebini Koru.</p>", unsafe_allow_html=True)
     
-    st.divider()
+    st.markdown("<br><br>", unsafe_allow_html=True)
     
-    st.warning("⚠️ Mevcut Verimlilik Puanın: %35")
-    st.progress(35)
-    st.caption("Telefonunun şarjı gibi düşün; evin enerjisi de sızıyor olabilir!")
-    
-    if st.button("🚀 Analizi Başlat ve Tasarruf Et", use_container_width=True):
-        with st.spinner('Ev verileri optimize ediliyor...'):
-            time.sleep(1.2)
-            st.session_state.giris = True
-            st.rerun()
+    col1, col2, col3 = st.columns([1,2,1])
+    with col2:
+        st.warning("⚠️ Mevcut Verimlilik Puanın: %35")
+        if st.button("🚀 Analizi Başlat ve Tasarruf Et", use_container_width=True):
+            with st.spinner('Sistem optimize ediliyor...'):
+                time.sleep(1.5)
+                st.session_state.giris = True
+                st.rerun()
+    st.markdown('</div>', unsafe_allow_html=True)
 
-# --- ANA UYGULAMA SAYFASI ---
+# --- ANA UYGULAMA SAYFASI (VİDEO BİTİNCE AÇILAN KISIM) ---
 else:
+    # Sidebar
     st.sidebar.markdown(
         '<div style="text-align: center;"><img src="https://raw.githubusercontent.com/zenta2898/enerji-asistani/main/logo.png" width="100"></div>',
         unsafe_allow_html=True
