@@ -58,7 +58,7 @@ if not st.session_state.giris:
     set_bg_video("intro.mp4")
     st.markdown('<div class="main-content">', unsafe_allow_html=True)
     st.markdown("<h1 style='text-shadow: 2px 2px 10px #000;'>Enerji Master</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='text-shadow: 2px 2px 10px #000;'>Watt'ını Bil, Cebini Koru.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='text-shadow: 2px 2px 10px #000;'>En temiz enerji, tüketilmeyendir.</p>", unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1,2,1])
     with col2:
