@@ -102,6 +102,26 @@ else:
             c_ad = st.selectbox("Cihaz:", ["Buzdolabı", "Klima", "TV", "Çamaşır Makinesi", "Ütü", "Fırın", "Aydınlatma"])
             c_watt = st.number_input("Güç (Watt):", value=200)
             c_saat = st.slider("Günlük Saat:", 0.5, 24.0, 3.0)
+           # Piyasa Verimlilik Standartları (Hizalamaya Dikkat!)
+        referanslar = {
+            "Buzdolabı": 150, 
+            "Klima": 900, 
+            "TV": 80, 
+            "Çamaşır Makinesi": 500,
+            "Bulaşık Makinesi": 800
+        }
+        
+        # Karşılaştırma ve AB Sınıfı Tahmini
+        if c_ad in referanslar:
+            ref_watt = referanslar[c_ad]
+            fark = ((c_watt - ref_watt) / ref_watt) * 100
+            
+            if c_watt <= ref_watt:
+                st.success(f"🌱 Bu cihaz piyasa ortalamasından %{abs(fark):.0f} daha verimli!")
+                st.caption("AB Standartlarına göre tahmini sınıf: **A+ veya A++**")
+            else:
+                st.warning(f"⚠️ Bu cihaz verimli modellere göre %{fark:.0f} daha fazla yakıyor.")
+                st.caption("AB Standartlarına göre tahmini sınıf: **C veya D**")
             if st.button("Listeye Ekle"):
                 st.session_state.cihazlar.append({"Cihaz": c_ad, "Watt": c_watt, "Saat": c_saat})
                 st.rerun()
@@ -133,21 +153,4 @@ else:
     if st.sidebar.button("Güvenli Çıkış"):
         st.session_state.giris = False
         st.rerun()
-        # Piyasa Verimlilik Standartları (Referans Değerler)
-            referanslar = {
-                "Buzdolabı": 150, 
-                "Klima": 900, 
-                "TV": 80, 
-                "Çamaşır Makinesi": 500,
-                "Bulaşık Makinesi": 800
-            }
-            
-            # Karşılaştırma Mantığı
-            if c_ad in referanslar:
-                ref_watt = referanslar[c_ad]
-                fark = ((c_watt - ref_watt) / ref_watt) * 100
-                
-                if c_watt <= ref_watt:
-                    st.success(f"✅ Bu cihaz piyasa ortalamasından %{abs(fark):.0f} daha verimli görünüyor!")
-                else:
-                    st.warning(f"⚠️ Bu cihaz verimli modellere göre %{fark:.0f} daha fazla enerji tüketiyor.")
+      
