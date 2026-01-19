@@ -1,3 +1,19 @@
+st.markdown("""
+    <style>
+    /* Butonların rengini değiştirir */
+    div.stButton > button:first-child {
+        background-color: #2E7D32;
+        color: white;
+        border-radius: 10px;
+        border: none;
+    }
+    /* Butonun üzerine gelince oluşacak efekt */
+    div.stButton > button:first-child:hover {
+        background-color: #4CAF50;
+        color: white;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 import streamlit as st
 import time
 import base64
