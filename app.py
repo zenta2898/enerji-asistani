@@ -28,6 +28,16 @@ st.markdown("""
         padding: 15px;
         border-radius: 15px;
     }
+    /* Cihaz Kartları Tasarımı */
+    .device-card {
+        background-color: white;
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 5px solid #2E7D32;
+        margin-bottom: 10px;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        color: #333;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -119,12 +129,22 @@ else:
             
             # Liste
             for idx, row in df.iterrows():
-                c1, c2, c3 = st.columns([3,2,1])
-                c1.write(f"**{row['Cihaz']}**")
-                c2.write(f"{row['Maliyet']:.2f} TL")
-                if c3.button("Sil", key=f"d_{idx}"):
-                    st.session_state.cihazlar.pop(idx)
-                    st.rerun()
+               # Eski liste yerine bu şık kartlı listeyi koyalım:
+            for idx, row in df.iterrows():
+                with st.container():
+                    # HTML ile kart görünümü oluşturuyoruz
+                    st.markdown(f"""
+                        <div class="device-card">
+                            <div style="display: flex; justify-content: space-between;">
+                                <strong>{row['Cihaz']}</strong>
+                                <span style="color: #2E7D32; font-weight: bold;">{row['Maliyet']:.2f} TL</span>
+                            </div>
+                            <small style="color: gray;">{row['Watt']}W | Günlük {row['Saat']} Saat</small>
+                        </div>
+                    """, unsafe_allow_html=True)
+                    if st.button(f"🗑️ Sil", key=f"d_{idx}"):
+                        st.session_state.cihazlar.pop(idx)
+                        st.rerun()
     
     elif sayfa == "📚 Tasarruf Sırları":
         st.header("📖 Tasarruf Kütüphanesi")
