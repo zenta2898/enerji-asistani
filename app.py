@@ -129,8 +129,6 @@ else:
             
             # Liste
             for idx, row in df.iterrows():
-               # Eski liste yerine bu şık kartlı listeyi koyalım:
-            for idx, row in df.iterrows():
                 with st.container():
                     # HTML ile kart görünümü oluşturuyoruz
                     st.markdown(f"""
