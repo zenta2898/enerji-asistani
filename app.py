@@ -133,3 +133,21 @@ else:
     if st.sidebar.button("Güvenli Çıkış"):
         st.session_state.giris = False
         st.rerun()
+        # Piyasa Verimlilik Standartları (Referans Değerler)
+            referanslar = {
+                "Buzdolabı": 150, 
+                "Klima": 900, 
+                "TV": 80, 
+                "Çamaşır Makinesi": 500,
+                "Bulaşık Makinesi": 800
+            }
+            
+            # Karşılaştırma Mantığı
+            if c_ad in referanslar:
+                ref_watt = referanslar[c_ad]
+                fark = ((c_watt - ref_watt) / ref_watt) * 100
+                
+                if c_watt <= ref_watt:
+                    st.success(f"✅ Bu cihaz piyasa ortalamasından %{abs(fark):.0f} daha verimli görünüyor!")
+                else:
+                    st.warning(f"⚠️ Bu cihaz verimli modellere göre %{fark:.0f} daha fazla enerji tüketiyor.")
