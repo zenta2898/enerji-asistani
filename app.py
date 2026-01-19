@@ -1,3 +1,6 @@
+import streamlit as st
+import time
+import base64
 st.markdown("""
     <style>
     /* Butonların rengini değiştirir */
@@ -14,9 +17,6 @@ st.markdown("""
     }
     </style>
     """, unsafe_allow_html=True)
-import streamlit as st
-import time
-import base64
 
 # 1. Sayfa Ayarları
 st.set_page_config(page_title="Enerji Master Pro", page_icon="🔋", layout="centered")
