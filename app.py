@@ -120,7 +120,21 @@ else:
             df = pd.DataFrame(st.session_state.cihazlar)
             df['Maliyet'] = (df['Watt'] / 1000) * df['Saat'] * 30 * 3.50
             
-            st.metric("📊 Toplam Tahmini Fatura", f"{df['Maliyet'].sum():.2f} TL")
+            # Eski st.metric yerine bu şık ve okunabilir kartı koyuyoruz:
+            toplam_fatura_degeri = df['Maliyet'].sum()
+            st.markdown(f"""
+                <div style="
+                    background-color: #f0f2f6; 
+                    padding: 20px; 
+                    border-radius: 15px; 
+                    text-align: center;
+                    border-left: 8px solid #2E7D32;
+                    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+                    margin-bottom: 20px;">
+                    <p style="color: #555; margin: 0; font-size: 1.1rem; font-weight: bold;">📊 Toplam Tahmini Fatura</p>
+                    <h2 style="color: #1a1a1a; margin: 0; font-size: 2.2rem; font-weight: 900;">{toplam_fatura_degeri:.2f} TL</h2>
+                </div>
+            """, unsafe_allow_html=True)
             
             # Pasta Grafiği
             fig = px.pie(df, values='Maliyet', names='Cihaz', hole=0.4,
