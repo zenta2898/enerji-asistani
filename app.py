@@ -199,7 +199,7 @@ else:
                                 <strong>{row['Cihaz']}</strong>
                                 <span style="color: #2E7D32; font-weight: bold;">{row['Maliyet']:.2f} TL</span>
                             </div>
-                            <small style="color: gray;">{row['Watt']}W | Günlük {row['Saat']} Saat</small>
+                            <small style="color: gray;">Tahmini Aylık Tüketim: <b>{(row['Watt'] * row['Saat'] * 30 / 1000):.1f} kWh</b></small>
                         </div>
                     """, unsafe_allow_html=True)
                     if st.button(f"🗑️ Sil", key=f"d_{idx}"):
