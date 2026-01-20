@@ -107,6 +107,8 @@ else:
 
     if sayfa == "📊 Fatura Analizi":
         st.title("⚡ Akıllı Enerji Paneli")
+        # Güncel Elektrik Birim Fiyatı (EPDK'ya göre burayı güncelleyebilirsin)
+        birim_fiyat = 2.59  # Örneğin 3.80 TL yaptık
         
         with st.expander("➕ Cihaz Ekle", expanded=True):
             c_ad = st.selectbox("Cihaz:", ["Buzdolabı", "Klima", "TV", "Çamaşır Makinesi", "Ütü", "Fırın", "Aydınlatma"])
@@ -118,7 +120,7 @@ else:
 
         if st.session_state.cihazlar:
             df = pd.DataFrame(st.session_state.cihazlar)
-            df['Maliyet'] = (df['Watt'] / 1000) * df['Saat'] * 30 * 3.50
+            df['Maliyet'] = (df['Watt'] / 1000) * df['Saat'] * 30 * birim_fiyat
             
             # Eski st.metric yerine bu şık ve okunabilir kartı koyuyoruz:
             toplam_fatura_degeri = df['Maliyet'].sum()
