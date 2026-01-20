@@ -110,12 +110,58 @@ else:
         # Güncel Elektrik Birim Fiyatı (EPDK'ya göre burayı güncelleyebilirsin)
         birim_fiyat = 2.59  # Örneğin 3.80 TL yaptık
         
-        with st.expander("➕ Cihaz Ekle", expanded=True):
-            c_ad = st.selectbox("Cihaz:", ["Buzdolabı", "Klima", "TV", "Çamaşır Makinesi", "Ütü", "Fırın", "Aydınlatma"])
-            c_watt = st.number_input("Güç (Watt):", value=200)
-            c_saat = st.slider("Günlük Saat:", 0.5, 24.0, 3.0)
-            if st.button("Listeye Ekle"):
+        with st.expander("➕ Cihaz Ekle (Etikete Göre)", expanded=True):
+            c_ad = st.selectbox("Cihaz Türü:", 
+                                ["Buzdolabı", "Çamaşır Makinesi", "Bulaşık Makinesi", "Klima", "TV", "Aydınlatma (Ampul)", "Fırın/Ütü/Süpürge"])
+            
+            # --- CİHAZA ÖZEL AKILLI SORULAR ---
+            if c_ad == "Buzdolabı":
+                c_yillik_kwh = st.number_input("Etiketteki Yıllık Tüketim (kWh/annum):", value=274, 
+                                               help="Siemens veya diğer marka etiketlerinin altındaki yıllık toplam kWh değeridir.")
+                # Aylık kWh hesabı: Yıllık / 12
+                aylik_kwh = c_yillik_kwh / 12
+                c_watt = (aylik_kwh / 30) * 1000 / 24 # Arka plan uyumu için watt'a çevrilir
+                c_saat = 24.0
+
+            elif c_ad in ["Çamaşır Makinesi", "Bulaşık Makinesi"]:
+                c_100_dongu = st.number_input("100 Döngü Başına Tüketim (kWh):", value=50, 
+                                              help="Yeni etiketlerdeki '100' simgesinin yanındaki değerdir.")
+                c_haftalik = st.slider("Haftalık Kullanım Sayısı:", 1, 14, 3)
+                # Aylık kWh: (Değer/100) * Haftalık * 4.3 hafta
+                aylik_kwh = (c_100_dongu / 100) * c_haftalik * 4.3
+                c_watt = (aylik_kwh / 30) * 1000 / 1 # Arka plan uyumu
+                c_saat = 1.0
+
+            elif c_ad == "Klima":
+                c_klima_yillik = st.number_input("Etiketteki Yıllık Isıtma/Soğutma Tüketimi (kWh/annum):", value=150, 
+                                                 help="Klima etiketindeki mevsimsel kullanım değeridir.")
+                aylik_kwh = c_klima_yillik / 12
+                c_watt = (aylik_kwh / 30) * 1000 / 24
+                c_saat = 24.0
+
+            elif c_ad == "TV":
+                c_tv_1000h = st.number_input("1000 Saatlik Tüketim (kWh):", value=60, 
+                                             help="TV etiketindeki '1000h' yazan kutucuktaki değerdir.")
+                c_gunluk_saat = st.slider("Günlük TV İzleme Süresi (Saat):", 1.0, 24.0, 4.0)
+                # Aylık kWh: (Değer/1000) * Günlük Saat * 30
+                aylik_kwh = (c_tv_1000h / 1000) * c_gunluk_saat * 30
+                c_watt = (aylik_kwh / 30) * 1000 / c_gunluk_saat
+                c_saat = c_gunluk_saat
+
+            elif c_ad == "Aydınlatma (Ampul)":
+                c_watt = st.number_input("Ampulün Gücü (Watt):", value=9, help="Ampul üzerindeki 5W, 9W, 12W gibi değerdir.")
+                c_adet = st.number_input("Aynı Tip Ampul Adedi:", value=1, step=1)
+                c_saat = st.slider("Günlük Yanma Süresi (Saat):", 1.0, 24.0, 5.0)
+                c_watt = c_watt * c_adet # Toplam watt
+
+            else: # Fırın, Ütü, Süpürge
+                c_watt = st.number_input("Cihazın Gücü (Watt):", value=2000, help="Cihazın arkasındaki metal plaka veya kutudaki W değeridir.")
+                c_saat = st.slider("Günlük Ortalama Kullanım (Saat):", 0.1, 10.0, 1.0)
+
+            # --- EKLEME BUTONU ---
+            if st.button("🚀 Cihazı Listeye Ekle"):
                 st.session_state.cihazlar.append({"Cihaz": c_ad, "Watt": c_watt, "Saat": c_saat})
+                st.toast(f"✅ {c_ad} hesaplamaya dahil edildi!")
                 st.rerun()
 
         if st.session_state.cihazlar:
